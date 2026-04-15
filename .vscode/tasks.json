@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-Command",
+        "if (Test-Path main.exe) {Remove-Item main.exe}"
+      ]
+    },
+
+    {
+      "label": "build",
+      "type": "shell",
+      "command": "g++",
+      "args": [
+        "src/main.cpp",
+        "src/Application.cpp",
+        "src/window/GWindow.cpp",
+        "src/log/Logger.cpp",
+        "-o",
+        "main.exe",
+        "-IC:/Project/raylib/resources/raylib/include",
+        "-LC:/Project/raylib/resources/raylib/lib",
+        "-lraylib",
+        "-lopengl32",
+        "-lgdi32",
+        "-lwinmm"
+      ],
+      "dependsOn": ["clean"],
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+
+    {
+      "label": "run",
+      "type": "shell",
+      "command": "main.exe",
+      "dependsOn": "build"
+    }
+  ]
+}
