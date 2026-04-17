@@ -10,15 +10,23 @@
         "if (Test-Path main.exe) {Remove-Item main.exe}"
       ]
     },
-
     {
       "label": "build",
       "type": "shell",
       "command": "g++",
       "args": [
+        "-std=c++20",
+        "-I${workspaceFolder}/src",
         "src/main.cpp",
         "src/Application.cpp",
         "src/window/GWindow.cpp",
+        "src/camera/GCamera.cpp",
+        "src/world/World.cpp",
+        "src/character/Player.cpp",
+        "src/character/Zombie.cpp",
+        "src/input/InputHandler.cpp",
+        "src/utilities/AssetManager.cpp",
+        "src/gameplay/Spawner.cpp",
         "src/log/Logger.cpp",
         "-o",
         "main.exe",
