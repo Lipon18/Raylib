@@ -1,7 +1,7 @@
 #include "Zombie.h"
 #include "Player.h"
 
-Zombie::Zombie(Vector2 position, Player* target, const GameAssets& assets) : Character(position), m_Target(target), m_GameAsset(assets) {
+Zombie::Zombie(Vector2 position, Player* target, const GameAssets& assets) : Character(position, 30.0f), m_Target(target), m_GameAsset(assets) {
     m_CurrentAnimation = &m_GameAsset.zombieWalk;
 }
 
@@ -23,10 +23,18 @@ void Zombie::Draw() {
     if (m_CurrentAnimation->empty()) return;
 
     Texture2D texture = (*m_CurrentAnimation)[m_FrameX];
+    float scaledW = texture.width * m_Scale;
+    float scaledH = texture.height * m_Scale;
     Rectangle source = { 0.0f, 0.0f, static_cast<float>(texture.width), static_cast<float>(texture.height) };
     Rectangle dest = { m_Position.x, m_Position.y, static_cast<float>(texture.width) * m_Scale, static_cast<float>(texture.height) * m_Scale };
-    Vector2 origin = { (texture.width * m_Scale) / 2.0f, (texture.height * m_Scale) / 2.0f };
+    Vector2 origin = { scaledW / 2.0f, scaledH / 2.0f };
     DrawTexturePro(texture, source, dest, origin, m_Rotation, WHITE);
+
+    float healthBarWidth = 50.0f;
+    float healthBarHeight = 6.0f;
+    float x = m_Position.x - healthBarWidth / 2.0f;
+    float y = m_Position.y - scaledH / 2.0f - 10.0f;
+    DrawHealthBar(x, y, healthBarWidth, healthBarHeight);
 }
 
 void Zombie::UpdateAnimation(float dt) {
@@ -38,4 +46,13 @@ void Zombie::UpdateAnimation(float dt) {
             m_FrameX = 0;
         }
     }
+}
+
+void Zombie::Kill() {
+    m_IsAlive = false;
+}
+
+float Zombie::GetCollisionRadius() const {
+    float baseSize = 80.0f;
+    return (baseSize * m_Scale);
 }

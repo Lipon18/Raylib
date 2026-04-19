@@ -27,6 +27,11 @@ class Player : public Character {
     void Update(float dt) override;
     void Draw() override;
 
+    void DrawHealthBar(float x, float y, float width, float height) const;
+
+    float GetCollisionRadius() const override {return 70.0f * m_Scale;}
+
+    std::vector<Bullet>& GetBullets() {return m_Bullets;}
     void SetRotation(float rotation) {m_Rotation = rotation;}
 
     private:

@@ -14,4 +14,5 @@ struct GameAssets {
     
     // UI
     Texture2D crosshair;
+    Texture2D menuBackground;
 };

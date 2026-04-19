@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(Vector2 position, const GameAssets& assets)  : Character(position),m_Assets(assets) {
+Player::Player(Vector2 position, const GameAssets& assets)  : Character(position, 100.0f), m_Assets(assets) {
     m_CurrentAnimation = &m_Assets.idleFrames;
     m_Footprints.reserve(64);
 }
@@ -41,9 +41,6 @@ void Player::Draw() {
     Rectangle dest = { m_Position.x, m_Position.y, static_cast<float>(texture.width) * m_Scale, static_cast<float>(texture.height) * m_Scale }; 
     Vector2 origin = { (texture.width * m_Scale) / 2.0f, (texture.height * m_Scale) / 2.0f };
     DrawTexturePro(texture, source, dest, origin, m_Rotation, WHITE);
-
-    DrawCircleV(m_MuzzleDebugPos, 3.0f, RED);
-    DrawLineV(m_Position, m_MuzzleDebugPos, RED);
 }
 
 void Player::UpdateAnimation(float dt) {
@@ -145,8 +142,16 @@ void Player::UpdateBullets(float dt) {
         m_Bullets[i].position = Vector2Add(m_Bullets[i].position, Vector2Scale(m_Bullets[i].velocity, dt));
 
         // e.g., 2000 units
-        if (Vector2Distance(m_Position, m_Bullets[i].position) > 2000.0f) {
+        if (!m_Bullets[i].active || Vector2Distance(m_Position, m_Bullets[i].position) > 2000.0f) {
             m_Bullets.erase(m_Bullets.begin() + i);
         }
     }
+}
+
+void Player::DrawHealthBar(float x, float y, float width, float height) const {
+    Character::DrawHealthBar(x, y, width, height);
+    float healthPercent = GetHealthPercent();
+    const char* text = TextFormat("HP: %d%%", static_cast<int>(healthPercent * 100));
+    int textWidth = MeasureText(text, 20);
+    DrawText(text, x + (width - textWidth) / 2, y - 22, 20, WHITE);
 }

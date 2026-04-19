@@ -9,6 +9,12 @@ bool AssetManager::LoadAll() {
         return false;
     }
 
+    m_GameAssets.menuBackground = LoadTexture("assets/cover_image/Wasted_Flesh_TopDown_Artwork.png");
+    if (m_GameAssets.menuBackground.id == 0) {
+        Logger::Error("Failed to load menu background!");
+        return false;
+    }
+    
     m_GameAssets.idleFrames = TextureManager::LoadFlipbook("assets/Top_Down_Survivor/handgun/idle/", "survivor-idle_handgun_", 20);
     m_GameAssets.runFrames = TextureManager::LoadFlipbook("assets/Top_Down_Survivor/handgun/move/", "survivor-move_handgun_", 20);
     m_GameAssets.playerFootSteps = TextureManager::LoadFlipbook("assets/Top_Down_Survivor/feet/run/", "survivor-run_", 20);

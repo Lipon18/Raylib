@@ -12,9 +12,16 @@ class Zombie : public Character {
 
     void Update(float dt) override;
     void Draw() override;
+    void Kill();
+
+    float GetCollisionRadius() const override;
+
+    bool GetIsAlive() const { return m_IsAlive; }
 
     private:
     void UpdateAnimation(float dt);
+
+    bool m_IsAlive = true;
 
     Player* m_Target;
     const GameAssets& m_GameAsset;

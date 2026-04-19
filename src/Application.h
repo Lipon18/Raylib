@@ -6,12 +6,14 @@
 #include "utilities/TextureManager.h"
 #include "character/AssetData.h"
 
-class GCamera;
-class World;
-class Player;
-class Zombie;
+class MainMenu;
+class GameLevel;
 class AssetManager;
-class Spawner;
+
+enum class AppState {
+    Menu,
+    Playing
+};
 
 class Application {
     public:
@@ -19,21 +21,14 @@ class Application {
     ~Application();
 
     void Run();
+    void Update();
+    void Draw();
 
     private:
     GWindow m_Window;
 
-    void Update();
-    void Draw();
-
+    AppState m_State;
+    std::unique_ptr<MainMenu> m_Menu;
+    std::unique_ptr<GameLevel> m_GameLevel;
     std::unique_ptr<AssetManager> m_Asset;
-    std::unique_ptr<World> m_World;
-    std::unique_ptr<GCamera> m_Camera;
-    std::unique_ptr<Player> m_Player;
-    std::vector<std::unique_ptr<Zombie>> m_Zombies;
-    std::unique_ptr<Spawner> m_Spawner;
-
-    GameAssets m_GameAssets;
-
-    Vector2 m_TestPoint = {1000, 1000};
 };
