@@ -1,12 +1,14 @@
 #include "Zombie.h"
 #include "Player.h"
+#include "gameplay/sound/SoundManager.h"
 
-Zombie::Zombie(Vector2 position, Player* target, const GameAssets& assets) : Character(position, 30.0f), m_Target(target), m_GameAsset(assets) {
+Zombie::Zombie(Vector2 position, Player* target, const GameAssets& assets, SoundManager* soundMgr) : Character(position, 30.0f, soundMgr), m_Target(target), m_GameAsset(assets) {
     m_CurrentAnimation = &m_GameAsset.zombieWalk;
 }
 
 void Zombie::Update(float dt) {
     if(!m_Target) return;
+    if(!m_Target->IsDead()) return;
 
     Vector2 taregtPos = m_Target->GetPosition();
     Vector2 direction = Vector2Subtract(taregtPos, m_Position);
@@ -16,6 +18,10 @@ void Zombie::Update(float dt) {
         direction = Vector2Normalize(direction);
         m_Position = Vector2Add(m_Position, Vector2Scale(direction, m_Speed * dt));
         UpdateAnimation(dt);
+
+        if(m_SoundManager && GetRandomValue(0, 200) == 0) {
+            m_SoundManager->PlaySFX("zombie_groan");
+        }
     }
 }
 
@@ -55,4 +61,11 @@ void Zombie::Kill() {
 float Zombie::GetCollisionRadius() const {
     float baseSize = 80.0f;
     return (baseSize * m_Scale);
+}
+
+void Zombie::Reset(Player* newTarget) {
+    m_Target = newTarget;
+    m_IsAlive = true;
+    m_Health = 30.0f;
+    m_FrameX = 0;
 }

@@ -3,6 +3,7 @@
   #include "scene/SceneManager.h"
   #include "scene/MenuScene.h"
   #include "utilities/AssetManager.h"
+  #include "gameplay/sound/SoundManager.h"
   #include "utilities/debug/Debug.h"
 
   Application::Application() : m_Window(800, 600, "Raylib Engine!") {
@@ -14,6 +15,9 @@
 
     m_SceneManager  = std::make_unique<SceneManager>();
     m_SceneManager->Init(m_Asset.get());
+
+    m_SoundManager = std::make_unique<SoundManager>();
+    m_SoundManager->Init();
 
     Logger::Info("Application initialized.");
     Debug::Init();
@@ -34,6 +38,7 @@
   void Application::Update() {
     float dt = GetFrameTime();
     m_SceneManager->Update(dt);
+    m_SoundManager->Update();
     Debug::Update();
   }
 

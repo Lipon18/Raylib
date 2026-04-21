@@ -33,6 +33,8 @@
         "src/gameplay/GameMode.cpp",
         "src/gameplay/GameLevel.cpp",
         "src/gameplay/MainMenu.cpp",
+        "src/gameplay/sound/SoundLoader.cpp",
+        "src/gameplay/sound/SoundManager.cpp",
         "src/scene/Scene.cpp",
         "src/scene/SceneManager.cpp",
         "src/scene/GameScene.cpp",

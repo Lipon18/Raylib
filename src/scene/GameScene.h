@@ -17,7 +17,7 @@ public:
     void Draw() override;
 
 private:
-    GameLevel* m_Level = nullptr;
+    std::unique_ptr<GameLevel> m_Level;
     GameAssets m_Assets;
     SceneManager* m_Manager;
 };

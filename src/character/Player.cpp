@@ -1,16 +1,21 @@
 #include "Player.h"
+#include "gameplay/sound/SoundManager.h"
 
-Player::Player(Vector2 position, const GameAssets& assets)  : Character(position, 100.0f), m_Assets(assets) {
+Player::Player(Vector2 position, const GameAssets& assets, SoundManager* soundMgr)  : Character(position, 100.0f, soundMgr), m_Assets(assets) {
     m_CurrentAnimation = &m_Assets.idleFrames;
     m_Footprints.reserve(64);
 }
 
 void Player::Update(float dt) {
-    HandleInput(dt);
-    HandleShooting(dt);
-    UpdateAnimation(dt);
-    UpdateFootprints(dt);
-    UpdateBullets(dt);
+    switch (m_State) {
+        case PlayerState::E_Alive : 
+        UpdateAlive(dt);
+        break;
+
+        case PlayerState::E_Dead : 
+        UpdateDead(dt);
+        break;
+    }
 }
 
 void Player::Draw() {
@@ -34,13 +39,21 @@ void Player::Draw() {
         }
     }
 
-    if (m_CurrentAnimation->empty()) return;
-
-    Texture2D texture = (*m_CurrentAnimation)[m_FrameX];
+    Texture2D texture = GetCurrentFrame();
     Rectangle source = { 0.0f, 0.0f, static_cast<float>(texture.width), static_cast<float>(texture.height) };
     Rectangle dest = { m_Position.x, m_Position.y, static_cast<float>(texture.width) * m_Scale, static_cast<float>(texture.height) * m_Scale }; 
     Vector2 origin = { (texture.width * m_Scale) / 2.0f, (texture.height * m_Scale) / 2.0f };
     DrawTexturePro(texture, source, dest, origin, m_Rotation, WHITE);
+}
+
+Texture2D Player::GetCurrentFrame() const {
+    if (!m_CurrentAnimation || m_CurrentAnimation->empty()) {
+        return Texture2D{};
+    }
+    int frameCount = (int)m_CurrentAnimation->size();
+    int frame = m_FrameX % frameCount;
+
+    return (*m_CurrentAnimation)[frame];
 }
 
 void Player::UpdateAnimation(float dt) {
@@ -55,6 +68,8 @@ void Player::UpdateAnimation(float dt) {
 }
 
 void Player::HandleInput(float dt) {
+    if (m_State == PlayerState::E_Dead) return;
+
     Vector2 direction = { 0, 0 };
     if (IsKeyDown(KEY_W)) direction.y -= 1;
     if (IsKeyDown(KEY_S)) direction.y += 1;
@@ -115,6 +130,8 @@ void Player::CreateFootprint() {
 }
 
 void Player::HandleShooting(float dt) {
+    if(m_State == PlayerState::E_Dead) return;
+
     if (m_ShootTimer > 0) m_ShootTimer -= dt;
 
     float rad = m_Rotation * DEG2RAD;
@@ -133,6 +150,9 @@ void Player::HandleShooting(float dt) {
         newBullet.velocity = Vector2Scale({cosR, sinR}, m_BulletSpeed);
 
         m_Bullets.push_back(newBullet);
+        if(m_SoundManager) {
+            m_SoundManager->PlaySFX("gunShot");
+        }
         m_ShootTimer = m_ShootCooldown;
     }
 }
@@ -154,4 +174,35 @@ void Player::DrawHealthBar(float x, float y, float width, float height) const {
     const char* text = TextFormat("HP: %d%%", static_cast<int>(healthPercent * 100));
     int textWidth = MeasureText(text, 20);
     DrawText(text, x + (width - textWidth) / 2, y - 22, 20, WHITE);
+}
+
+void Player::OnDeath() {
+    if(m_SoundManager) {
+        m_SoundManager->PlaySFX("player_dead");
+    }
+}
+
+void Player::UpdateAlive(float dt) {
+    if (IsDead()) {
+       m_State = PlayerState::E_Dead;
+       return;
+    }
+
+    HandleInput(dt);
+    HandleShooting(dt);
+    UpdateAnimation(dt);
+    UpdateFootprints(dt);
+    UpdateBullets(dt);
+}
+
+void Player::UpdateDead(float dt) {
+    if(!m_DeathHandled) {
+        OnDeath();
+        m_DeathHandled = true;
+
+        m_Bullets.clear();
+    }
+
+    m_CurrentAnimation = &m_Assets.idleFrames;
+    m_FrameX = 0;
 }

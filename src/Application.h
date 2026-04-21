@@ -8,6 +8,7 @@
 
 class SceneManager;
 class AssetManager;
+class SoundManager;
 
 class Application {
     public:
@@ -23,4 +24,5 @@ class Application {
 
     std::unique_ptr<AssetManager> m_Asset;
     std::unique_ptr<SceneManager> m_SceneManager;
+    std::unique_ptr<SoundManager> m_SoundManager;
 };

@@ -2,6 +2,7 @@
 
 #include "raylib.h"
 #include <vector>
+#include <string>
 
 struct GameAssets {
     // Player Assets
@@ -15,4 +16,11 @@ struct GameAssets {
     // UI
     Texture2D crosshair;
     Texture2D menuBackground;
+};
+
+struct AudioAsset {
+    std::string gunShot = "gunShot";
+    std::string ZombieGroan = "zombie_groan";
+    std::string hit = "hit";
+    std::string die = "player_dead";
 };

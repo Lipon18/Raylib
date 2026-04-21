@@ -8,7 +8,7 @@ class Player;
 
 class Zombie : public Character {
     public:
-    Zombie(Vector2 position, Player* target, const GameAssets& assets);
+    Zombie(Vector2 position, Player* target, const GameAssets& assets, SoundManager* soundMgr);
 
     void Update(float dt) override;
     void Draw() override;
@@ -17,13 +17,14 @@ class Zombie : public Character {
     float GetCollisionRadius() const override;
 
     bool GetIsAlive() const { return m_IsAlive; }
+    void SetTarget(Player* player) {m_Target = player;}
 
     private:
     void UpdateAnimation(float dt);
 
     bool m_IsAlive = true;
 
-    Player* m_Target;
+    Player* m_Target = nullptr;
     const GameAssets& m_GameAsset;
     const std::vector<Texture2D>* m_CurrentAnimation;
 
@@ -34,4 +35,6 @@ class Zombie : public Character {
     float m_RunningTime = 0.0f;
     float m_UpdateTime = 1.0f / 12.0f; 
     float m_Scale = 0.5f;
+
+    void Reset(Player* newTarget);
 };

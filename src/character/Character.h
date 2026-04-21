@@ -2,9 +2,11 @@
 
     #include "raylib.h"
 
+    class SoundManager;
+
     class Character {
         public:
-        Character(Vector2 position, float maxHealth) : m_Position(position), m_MaxHealth(maxHealth) { m_Health = ClampHealth(maxHealth); }
+        Character(Vector2 position, float maxHealth, SoundManager* soundMgr = nullptr) : m_Position(position), m_MaxHealth(maxHealth), m_SoundManager(soundMgr) { m_Health = ClampHealth(maxHealth); }
         virtual ~Character() {}
         virtual void Update(float dt) = 0;
         virtual void Draw() = 0;
@@ -13,6 +15,11 @@
         void TakeDamage(float amount) {
             if(amount <= 0.0f) return;
             ModifyHealth(-amount);
+
+            if(m_Health <= 0.0f && !m_IsDead) {
+                m_IsDead = true;
+                OnDeath();
+            }
         }
 
         float GetHealthPercent() const { 
@@ -20,7 +27,7 @@
             return ClampHealth(m_Health) / m_MaxHealth;
         }
 
-        bool IsDead() const {return m_Health <= 0.0f;}
+        bool IsDead() const {return m_IsDead;}
         
         Vector2 GetPosition() const {return m_Position;}
         void SetPosition(Vector2 pos) {m_Position = pos;}
@@ -29,7 +36,12 @@
         Vector2 m_Position;
         float m_MaxHealth;
         float m_Health;
+        
+        SoundManager* m_SoundManager;
 
+        bool m_IsDead = false;
+
+        virtual void OnDeath() {}
 
         void ModifyHealth(float amount) {
             m_Health = ClampHealth(m_Health + amount);

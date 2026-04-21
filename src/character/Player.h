@@ -20,16 +20,23 @@ struct Bullet {
     bool active;
 };
 
+enum class PlayerState {
+    E_Alive,
+    E_Dead
+};
+
 class Player : public Character {
     public:
-    Player(Vector2 position, const GameAssets& assets);
+    Player(Vector2 position, const GameAssets& assets, SoundManager* soundMgr);
 
     void Update(float dt) override;
     void Draw() override;
+    virtual void OnDeath() override;
 
     void DrawHealthBar(float x, float y, float width, float height) const;
 
     float GetCollisionRadius() const override {return 70.0f * m_Scale;}
+    PlayerState GetState() const {return m_State;}
 
     std::vector<Bullet>& GetBullets() {return m_Bullets;}
     void SetRotation(float rotation) {m_Rotation = rotation;}
@@ -40,6 +47,9 @@ class Player : public Character {
 
     const GameAssets& m_Assets;
     const std::vector<Texture2D>* m_CurrentAnimation;
+
+    PlayerState m_State = PlayerState::E_Alive;
+    bool m_DeathHandled = false;
 
     std::vector<Footprint> m_Footprints;
     float m_FootstepTimer = 0.0f;
@@ -64,6 +74,10 @@ class Player : public Character {
     void CreateFootprint();
     void HandleShooting(float dt);
     void UpdateBullets(float dt);
+    void UpdateAlive(float dt);
+    void UpdateDead(float dt);
+
+    Texture2D GetCurrentFrame() const;
 
     Vector2 m_MuzzleDebugPos = { 0, 0 };
     float m_MuzzleForward = 90.0f;

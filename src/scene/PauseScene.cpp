@@ -13,6 +13,18 @@ void PauseScene::Update(float dt) {
 }
 
 void PauseScene::Draw() {
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), Color{0, 0, 0, 160});
-    DrawText("PAUSED", 350, 200, 40, WHITE);;
+    int w = GetScreenWidth();
+    int h = GetScreenHeight();
+
+    DrawRectangle(0, 0, w, h, Color{0, 0, 0, 160});
+    const char* text = "PAUSED";
+    int fontSize = 40;
+    int textWidth = MeasureText(text, fontSize);
+
+    DrawText(text, (w - textWidth) / 2, (h - fontSize) / 2, fontSize, WHITE);
+
+    const char* hint = "Press P to resume";
+    int hintWidth = MeasureText(hint, 20);
+
+    DrawText(hint, (w - hintWidth) / 2, (h / 2) + 40, 20, YELLOW);
 }
